@@ -1,0 +1,82 @@
+{
+	"name": "flowlet1",
+	"properties": {
+		"type": "Flowlet",
+		"typeProperties": {
+			"sources": [],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "aggregateiplfiles"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "flowletiplfilescsv"
+				},
+				{
+					"name": "output1"
+				}
+			],
+			"scriptLines": [
+				"input(output(",
+				"          {Match ID} as short,",
+				"          Date as date,",
+				"          Venue as string,",
+				"          Team1 as string,",
+				"          Team2 as string,",
+				"          {Toss Winner} as string,",
+				"          {Toss Decision} as string,",
+				"          Stage as string,",
+				"          {First Innings Score} as short,",
+				"          {First Innings Wicket} as short,",
+				"          {Second Innings score} as short,",
+				"          {Second Innings Wicket} as short,",
+				"          {Match Winner} as string,",
+				"          {Won by} as string,",
+				"          Margin as short,",
+				"          {Player of the match} as string",
+				"     ),",
+				"     order: 0,",
+				"     allowSchemaDrift: true) ~> flowletiplfilescsv",
+				"flowletiplfilescsv aggregate(groupBy({Match ID},",
+				"          Date,",
+				"          Venue,",
+				"          Team2,",
+				"          Team1,",
+				"          {Toss Winner},",
+				"          {Toss Decision},",
+				"          Stage,",
+				"          {First Innings Score},",
+				"          {First Innings Wicket},",
+				"          {Second Innings score},",
+				"          {Second Innings Wicket},",
+				"          {Match Winner},",
+				"          {Won by},",
+				"          Margin),",
+				"     totalcount = count()) ~> aggregateiplfiles",
+				"aggregateiplfiles select(mapColumn(",
+				"          {Match ID},",
+				"          Date,",
+				"          Venue,",
+				"          Team2,",
+				"          Team1,",
+				"          {Toss Winner},",
+				"          {Toss Decision},",
+				"          Stage,",
+				"          {First Innings Score},",
+				"          {First Innings Wicket},",
+				"          {Second Innings score},",
+				"          {Second Innings Wicket},",
+				"          {Match Winner},",
+				"          {Won by},",
+				"          Margin",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 output() ~> output1"
+			]
+		}
+	}
+}

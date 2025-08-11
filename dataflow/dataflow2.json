@@ -1,0 +1,94 @@
+{
+	"name": "dataflow2",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"linkedService": {
+						"referenceName": "AzureDataLakeStorage1",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sourceiplfilesparquetcleansed"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "AzureDataLakeStorage1",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "flowlet1",
+					"flowlet": {
+						"referenceName": "flowlet2",
+						"type": "DataFlowReference"
+					}
+				},
+				{
+					"name": "derivedColumn2"
+				},
+				{
+					"name": "sort1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Match_ID as short,",
+				"          Date as date,",
+				"          Venue as string,",
+				"          Team2 as string,",
+				"          Team1 as string,",
+				"          Toss_Winner as string,",
+				"          Toss_Decision as string,",
+				"          Stage as string,",
+				"          First_Innings_Score as short,",
+				"          First_Innings_Wicket as short,",
+				"          Second_Innings_score as short,",
+				"          Second_Innings_Wicket as short,",
+				"          Match_Winner as string,",
+				"          Won_by as string,",
+				"          Margin as short",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet',",
+				"     fileSystem: 'cleansed') ~> sourceiplfilesparquetcleansed",
+				"sourceiplfilesparquetcleansed compose(mapColumn(",
+				"          Match_ID,",
+				"          Date,",
+				"          Venue,",
+				"          Team1,",
+				"          Team2,",
+				"          Toss_Winner,",
+				"          Toss_Decision,",
+				"          Stage,",
+				"          First_Innings_Score,",
+				"          First_Innings_Wicket,",
+				"          Second_Innings_score,",
+				"          Second_Innings_Wicket,",
+				"          Match_Winner,",
+				"          Won_by,",
+				"          Margin",
+				"     ),",
+				"     composition: 'flowlet2') ~> flowlet1@(output1)",
+				"flowlet1@output1 derive(Totalwickets = toInteger(First_Innings_Wicket)+toInteger(Second_Innings_Wicket)) ~> derivedColumn2",
+				"derivedColumn2 sort(desc(Totalwickets, true)) ~> sort1",
+				"sort1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     fileSystem: 'structured',",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
+			]
+		}
+	}
+}

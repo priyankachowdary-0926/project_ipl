@@ -1,0 +1,81 @@
+{
+	"name": "flowlet2",
+	"properties": {
+		"type": "Flowlet",
+		"typeProperties": {
+			"sources": [],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "aggregate1"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "input1"
+				},
+				{
+					"name": "output1"
+				}
+			],
+			"scriptLines": [
+				"input(output(",
+				"          Match_ID as short,",
+				"          Date as date,",
+				"          Venue as string,",
+				"          Team1 as string,",
+				"          Team2 as string,",
+				"          Toss_Winner as string,",
+				"          Toss_Decision as string,",
+				"          Stage as string,",
+				"          First_Innings_Score as short,",
+				"          First_Innings_Wicket as short,",
+				"          Second_Innings_score as short,",
+				"          Second_Innings_Wicket as short,",
+				"          Match_Winner as string,",
+				"          Won_by as string,",
+				"          Margin as short",
+				"     ),",
+				"     order: 0,",
+				"     allowSchemaDrift: true) ~> input1",
+				"input1 aggregate(groupBy(Match_ID,",
+				"          Date,",
+				"          Venue,",
+				"          Team1,",
+				"          Team2,",
+				"          Toss_Winner,",
+				"          Toss_Decision,",
+				"          Stage,",
+				"          First_Innings_Score,",
+				"          First_Innings_Wicket,",
+				"          Second_Innings_score,",
+				"          Second_Innings_Wicket,",
+				"          Match_Winner,",
+				"          Won_by,",
+				"          Margin),",
+				"     totalcount = count()) ~> aggregate1",
+				"aggregate1 select(mapColumn(",
+				"          Match_ID,",
+				"          Date,",
+				"          Venue,",
+				"          Team1,",
+				"          Team2,",
+				"          Toss_Winner,",
+				"          Toss_Decision,",
+				"          Stage,",
+				"          First_Innings_Score,",
+				"          First_Innings_Wicket,",
+				"          Second_Innings_score,",
+				"          Second_Innings_Wicket,",
+				"          Match_Winner,",
+				"          Won_by,",
+				"          Margin",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 output() ~> output1"
+			]
+		}
+	}
+}

@@ -1,0 +1,28 @@
+{
+	"name": "HttpServer1",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"parameters": {
+			"userName": {
+				"type": "string",
+				"defaultValue": "Priyanakchowdary-0926"
+			}
+		},
+		"annotations": [],
+		"type": "HttpServer",
+		"typeProperties": {
+			"url": "https://raw.githubusercontent.com/priyankachowdary-0926/project_ipl/refs/heads/main/",
+			"enableServerCertificateValidation": false,
+			"authenticationType": "Basic",
+			"userName": "@{linkedService().userName}",
+			"password": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "ls_akv",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "GitHubpassword"
+			}
+		}
+	}
+}
